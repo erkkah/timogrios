@@ -8,18 +8,20 @@
 extern void tigrMain();
 extern void tigrIOSInit(int w, int h);
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate, GLKViewDelegate>
+@interface TigrAppDelegate : UIResponder <UIApplicationDelegate, GLKViewDelegate>
 @property(strong, nonatomic) UIWindow* window;
-@property(strong, nonatomic) EAGLContext* context;
-@property(strong, nonatomic) GLKViewController* viewController;
-@property(strong, nonatomic) GLKView* view;
 @end
 
-@implementation AppDelegate
+@interface TigrAppDelegate ()
+@property(strong, nonatomic, readwrite) EAGLContext* context;
+@property(strong, nonatomic, readwrite) GLKViewController* viewController;
+@property(strong, nonatomic, readwrite) GLKView* view;
+@end
+
+@implementation TigrAppDelegate
 
 static NSCondition* renderTime;
-static CADisplayLink* displayLink;
-static AppDelegate* app;
+static TigrAppDelegate* app;
 
 - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(id)options {
     app = self;
@@ -82,23 +84,27 @@ void ios_swap() {
     [renderTime wait];
 }
 
-void ios_acquire_context() {
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        [app pause];
-    });
+void pauseApp(void* arg) {
+    [app pause];
+}
 
+void resumeApp(void* arg) {
+    [EAGLContext setCurrentContext:app.context];
+    [app resume];
+}
+
+void ios_acquire_context() {
+    dispatch_sync_f(dispatch_get_main_queue(), NULL, pauseApp);
     [EAGLContext setCurrentContext:app.context];
 }
 
 void ios_release_context() {
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        [EAGLContext setCurrentContext:app.context];
-        [app resume];
-    });
+    [EAGLContext setCurrentContext:nil];
+    dispatch_sync_f(dispatch_get_main_queue(), NULL, resumeApp);
 }
 
 int main(int argc, char* argv[]) {
     @autoreleasepool {
-        return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
+        return UIApplicationMain(argc, argv, nil, @"TigrAppDelegate");//NSStringFromClass([TigrAppDelegate class]));
     }
 }
