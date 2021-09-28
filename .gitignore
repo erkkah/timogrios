@@ -1,2 +1,6 @@
 tigr
 archive
+build
+*.app
+*.entitlements
+*.mobileprovision
