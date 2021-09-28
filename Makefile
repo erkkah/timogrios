@@ -1,12 +1,14 @@
-default: app
+default: check $(TARGET)
 
-SDKROOT:=$(shell xcrun --sdk iphonesimulator --show-sdk-path)
-#SDKROOT:=$(shell xcrun --sdk iphoneos --show-sdk-path)
-
-defines:
+builtins:
 	clang -isysroot $(SDKROOT) -dM -E - < /dev/null
 
-app: main.m main.c tigr/tigr.c tigr/tigr.h MakeTest.app
+check:
+	@[ ! -z $(SDKROOT) ]
+
+SOURCES=main.m main.c
+
+$(TARGET): $(SOURCES) tigr/tigr.c tigr/tigr.h
 	clang -isysroot $(SDKROOT) \
 	-framework Foundation \
 	-framework UIKit \
@@ -14,12 +16,9 @@ app: main.m main.c tigr/tigr.c tigr/tigr.h MakeTest.app
 	-framework OpenGLES \
 	-framework GLKit \
 	-I tigr \
-	-o MakeTest.app/$@ main.m main.c tigr/tigr.c
+	-o $@ $(SOURCES) tigr/tigr.c
 
-.PHONY: clean
-
-MakeTest.app:
-	mkdir MakeTest.app
+.PHONY: clean check
 
 clean:
-	rm MakeTest.app/app
+	rm -rf build/*

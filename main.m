@@ -1,12 +1,10 @@
 #import <UIKit/UIKit.h>
 
-extern void tigrInitIOS();
+extern Class tigrAppDelegate();
 
 int main(int argc, char* argv[]) {
-    tigrInitIOS();
-
     @autoreleasepool {
-        UIApplicationMain(argc, argv, nil, @"TigrAppDelegate");  // NSStringFromClass([AppDelegate class]));
+        UIApplicationMain(argc, argv, nil, NSStringFromClass(tigrAppDelegate()));
     }
 }
 
