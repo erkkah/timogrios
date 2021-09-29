@@ -27,7 +27,7 @@ esac
 workdir=$(mktemp -d cert.XXXXXX)
 base="$workdir/signing"
 
-. settings.dev
+. settings.env
 
 # Generate the key pair
 openssl genrsa -out ${base}.key 2048

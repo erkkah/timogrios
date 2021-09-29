@@ -1,12 +1,6 @@
 default: check $(TARGET)
 
-builtins:
-	clang -isysroot $(SDKROOT) -dM -E - < /dev/null
-
-check:
-	@[ ! -z $(SDKROOT) ]
-
-SOURCES=main.m main.c
+SOURCES=src/main.m src/main.c
 
 $(TARGET): $(SOURCES) tigr/tigr.c tigr/tigr.h
 	clang -isysroot $(SDKROOT) \
@@ -22,3 +16,6 @@ $(TARGET): $(SOURCES) tigr/tigr.c tigr/tigr.h
 
 clean:
 	rm -rf build/*
+
+check:
+	@[ ! -z $(SDKROOT) ]
