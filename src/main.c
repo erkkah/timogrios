@@ -17,7 +17,7 @@ void tigrMain() {
 
     float liveTime = 0;
 
-    Tigr* logo = tigrLoadImage("timogr.png");
+    Tigr* logo = tigrLoadImage("Icon@3x.png");
     if (!logo) {
         tigrError(0, "Failed to load image: %d", errno);
     }
