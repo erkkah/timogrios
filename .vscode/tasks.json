@@ -1,0 +1,101 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "timogrios launch in simulator",
+            "type": "shell",
+            "isBackground": true,
+            "problemMatcher": {
+                "owner": "timogrios",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}"
+                ],
+                "pattern": {
+                    "regexp": "$(.*)^",
+                    "file": 1,
+                    "line": 1,
+                    "column": 1,
+                    "severity": 1,
+                    "message": 1
+                },
+                "background": {
+                    "activeOnStart": false,
+                    "beginsPattern": "^Building for .*",
+                    "endsPattern": "^Launching .*"
+                },
+            },
+            "command": "./launch.sh",
+            "args": [
+                "simulator",
+                "debug",
+                "remote=6666"
+            ],
+            "presentation": {
+                "echo": false,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true
+            }
+        },
+        {
+            "label": "timogrios launch on device",
+            "type": "shell",
+            "isBackground": true,
+            "problemMatcher": {
+                "owner": "timogrios",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}"
+                ],
+                "pattern": {
+                    "regexp": "$(.*)^",
+                    "file": 1,
+                    "line": 1,
+                    "column": 1,
+                    "severity": 1,
+                    "message": 1
+                },
+                "background": {
+                    "activeOnStart": false,
+                    "beginsPattern": "^Building for .*",
+                    "endsPattern": "^Launching .*"
+                },
+            },
+            "command": "./launch.sh",
+            "args": [
+                "device",
+                "debug",
+                "remote=6666"
+            ],
+            "presentation": {
+                "echo": false,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true
+            }
+        },
+        {
+            "label": "timogrios cleanup",
+            "type": "shell",
+            "command": "./launch.sh",
+            "args": [
+                "cleanup"
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": false
+            }
+        }
+    ]
+}

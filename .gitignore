@@ -4,3 +4,6 @@ build
 *.app
 *.entitlements
 *.mobileprovision
+
+# Explicitly include .vscode
+!.vscode

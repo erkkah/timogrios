@@ -1,0 +1,40 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug in simulator",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/app.simulator",
+            "MIMode": "lldb",
+            "miDebuggerServerAddress": "localhost:6666",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "timogrios launch in simulator",
+        },
+        {
+            "name": "Debug on device",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/app.device",
+            "MIMode": "lldb",
+            "cwd": "${workspaceFolder}",
+            "targetArchitecture": "arm64",
+            "preLaunchTask": "timogrios launch on device",
+            "postDebugTask": "timogrios cleanup",
+            "customLaunchSetupCommands": [
+                {"text": "platform select remote-ios"},
+                {"text": "target create \"${workspaceFolder}/build/app.device\""},
+                {"text": "command source \"${workspaceFolder}/.init.lldb\""},
+                {"text": "command script import \"${workspaceFolder}/lldb.py\""},
+                {"text": "command script add -f lldb.connect_command connect"},
+                {"text": "command script add -s asynchronous -f lldb.run_command run"},
+                {"text": "connect"},
+                {"text": "run"},
+            ],
+            "launchCompleteCommand": "None",
+        },
+    ],
+}

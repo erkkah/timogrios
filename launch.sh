@@ -5,19 +5,8 @@ set -e
 . settings.env
 
 usage() {
-    echo "Usage: $0 [debug]"
+    echo "Usage: $0 [debug [remote=<port>] | cleanup] ['device' | 'simulator']"
 }
-
-for arg in $*; do
-    case $arg in
-        debug)
-            DEBUG=1
-            ;;
-        *)
-            usage
-            ;;
-    esac
-done
 
 noTarget() {
     echo "No connected device or running simulator."
@@ -27,6 +16,10 @@ noTarget() {
 extractInfoField() {
     local field=$1
     xmllint --xpath "/plist/dict/key[text()='$field']/following-sibling::string[1]/child::text()" Info.plist
+}
+
+clean() {
+    rm -rf "$BUNDLE"
 }
 
 build() {
@@ -68,7 +61,6 @@ checkProvisioning() {
 }
 
 sign() {
-    echo codesign -f -s "$SIGNING_IDENTITY" --entitlements "$ENTITLEMENTS" "$BUNDLE"
     codesign -f -s "$SIGNING_IDENTITY" --entitlements "$ENTITLEMENTS" "$BUNDLE"
 }
 
@@ -76,6 +68,7 @@ bundle() {
     cp Info.plist "$BUNDLE"
     cp "$TARGET" "$BUNDLE/app"
     cp -r resources/* "$BUNDLE"
+    xattr -cr "$BUNDLE"
 }
 
 package() {
@@ -91,10 +84,38 @@ package() {
     (cd $(dirname $PAYLOAD) && zip -r ../$IPA $(basename $PAYLOAD))
 }
 
+waitForPath() {
+    local jsonLog=$1
+    
+    set +e
+    while [[ ! -f "$jsonLog" || ! $(grep DebugServerLaunched "$jsonLog") ]]; do
+        sleep 0.5
+        grep -q -E 'Event.*:.*Error' "$jsonLog" && \
+        grep -E -A2 'Event.*:.*Error' "$jsonLog" && \
+        exit 99
+    done
+    set -e
+}
+
+getPath() {
+    local jsonLog=$1
+
+    grep -A 2 DebugServerLaunched "$jsonLog" | grep Path | sed -e 's!\\!!g' | cut -f4 -d'"'
+}
+
+saveLLDBInitCommands() {
+    local deviceApp=$1
+    cat <<EOF > .init.lldb
+script fruitstrap_device_app="${deviceApp}"
+script fruitstrap_connect_url="connect://127.0.0.1:${DEBUG_PORT}"
+EOF
+}
+
 launchOnDevice() {
     echo "Building for device"
     export SDKROOT=$(xcrun --sdk iphoneos --show-sdk-path)
     export TARGET=build/app.device
+    clean
     build
     bundle
     cp "$PROFILE" "$BUNDLE"
@@ -104,15 +125,35 @@ launchOnDevice() {
 
     echo "Launching on connected device"
     if [[ -z "$DEBUG" ]]; then
-        local justLaunch=-L
+        ios-deploy -L -d -b "$BUNDLE"
+    else
+        if [[ -z "$DEBUG_PORT" ]]; then
+            ios-deploy -d -b "$BUNDLE"
+        else
+            ios-deploy -N -p $DEBUG_PORT -b "$BUNDLE" --json > .debugserver.json &
+            echo $! > .debugserver.pid
+            echo -n "Waiting for debug server.."
+            waitForPath .debugserver.json
+            echo "running"
+            local deviceApp=$(getPath .debugserver.json)
+            echo "Device app path: $deviceApp"
+            saveLLDBInitCommands $deviceApp
+        fi
     fi
-    ios-deploy -d $justLaunch -b "$BUNDLE"
+}
+
+cleanup() {
+    set +e
+    [[ -f .debugserver.pid ]] && kill $(cat .debugserver.pid)
+    rm -f .debugserver.pid .debugserver.json .init.lldb
+    exit 0
 }
 
 launchOnSimulator() {
     echo "Building for simulator"
     export SDKROOT=$(xcrun --sdk iphonesimulator --show-sdk-path)
     export TARGET=build/app.simulator
+    clean
     build
     bundle
 
@@ -124,7 +165,20 @@ launchOnSimulator() {
     else
         local nameAndPID=$(xcrun simctl launch -w booted "$BUNDLE_ID")
         local PID=${nameAndPID/*:/}
-        lldb -o run -p $PID
+        PID=${PID// /}
+        echo "App running with pid $PID"
+        if [[ -z "$DEBUG_PORT" ]]; then
+            lldb -p $PID -o continue
+        else
+            debugServer=$(xcode-select -p)/../SharedFrameworks/LLDB.framework/Resources/debugserver
+            if [[ -x "$debugServer" ]]; then
+                echo "Launching debug server on port $DEBUG_PORT"
+                "$debugServer" localhost:$DEBUG_PORT --attach=$PID
+            else
+                echo "Failed to locate debug server"
+                exit 1
+            fi
+        fi
     fi
 }
 
@@ -132,18 +186,46 @@ deviceConnected() {
     ios-deploy -c -t 1
 }
 
-verifySimulatorRunning() {
-    xcrun simctl getenv booted HOME &> /dev/null || (open -a Simulator && sleep 3)
-    xcrun simctl getenv booted HOME &> /dev/null || noTarget
+simulatorRunning() {
+    xcrun simctl getenv booted HOME &> /dev/null
 }
 
-PROFILE="embedded.mobileprovision"
+verifySimulatorRunning() {
+    simulatorRunning || (open -a Simulator && sleep 3)
+    simulatorRunning || noTarget
+}
+
+for arg in $*; do
+    case $arg in
+        debug)
+            DEBUG=1
+            ;;
+        remote=*)
+            DEBUG_PORT=${arg/*=/}
+            [[ -z "$DEBUG_PORT" ]] && usage
+            ;;
+        cleanup)
+            cleanup
+            ;;
+        device)
+            FORCE_DEVICE=1
+            ;;
+        simulator)
+            FORCE_SIMULATOR=1
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
+
 BUNDLE_ID=$(extractInfoField CFBundleIdentifier)
 BUNDLE=$(extractInfoField CFBundleName).app
 BINARY=$(extractInfoField CFBundleExecutable)
+PROFILE="$BUNDLE_ID.mobileprovision"
 ENTITLEMENTS="$BUNDLE_ID.entitlements"
 
-if deviceConnected; then
+if [[ $FORCE_DEVICE ]] || deviceConnected && [[ ! $FORCE_SIMULATOR ]]; then
     checkProvisioning
     launchOnDevice
 else
