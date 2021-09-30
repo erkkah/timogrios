@@ -2,8 +2,15 @@ default: check $(TARGET)
 
 SOURCES=src/main.m src/main.c
 
-$(TARGET): $(SOURCES) tigr/tigr.c tigr/tigr.h
-	clang -isysroot $(SDKROOT) \
+ifdef DEBUG
+CFLAGS+=-g -O0
+else
+CFLAGS+=-Oz
+endif
+
+$(TARGET): $(SOURCES) tigr/tigr.c tigr/tigr.h Makefile
+	clang $(CFLAGS) \
+	-isysroot $(SDKROOT) \
 	-framework Foundation \
 	-framework UIKit \
 	-framework QuartzCore \

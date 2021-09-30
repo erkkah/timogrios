@@ -26,7 +26,7 @@ build() {
     mkdir -p build
     mkdir -p "$BUNDLE"
     cp Info.plist "$BUNDLE"
-    make
+    make clean && make
     cp "$TARGET" "$BUNDLE/$BINARY"
 }
 
@@ -198,7 +198,7 @@ verifySimulatorRunning() {
 for arg in $*; do
     case $arg in
         debug)
-            DEBUG=1
+            export DEBUG=1
             ;;
         remote=*)
             DEBUG_PORT=${arg/*=/}
