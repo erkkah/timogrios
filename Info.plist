@@ -9,11 +9,11 @@
 	<key>CFBundleExecutable</key>
 	<string>app</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.sedgelake.tigr.testing</string>
+	<string>com.example.timogrios</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>TigrTest</string>
+	<string>Timogrios</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

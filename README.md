@@ -1,15 +1,17 @@
-# TIMOGRiOS - TIny MObile GRaphics starter template *for iOS*
+# TIMOGRiOS - TIny MObile GRaphics starter template for iOS :tiger:
 
-TIMOGRiOS is a tiny iOS starter template for creating fullscreen 2D apps using the
+**TIMOGRiOS** is a tiny iOS starter template for creating fullscreen 2D apps using the
 [TIGR](https://github.com/erkkah/tigr) library.
 
 Like TIGR, TIMOGRiOS is designed to be small and mostly independent.
 The "hello world" app bundle is less than 350k.
 
-TIMOGRiOS takes away a lot of the hassles of working with iOS apps and makes
-the complete development cycle super fast. Oh, and don't even have to open Xcode.
+TIMOGRiOS takes away a lot of the hassle of working with iOS apps and makes
+the complete development cycle super fast.
 
-## Prerequisites
+Oh, and you don't even have to open up Xcode to compile, debug and sign your apps!
+
+## Prerequisites :shopping:
 
 *To just run on a Simulator:*
 
@@ -24,7 +26,7 @@ the complete development cycle super fast. Oh, and don't even have to open Xcode
 
  Making image sets (see [Adding Resources](#Adding%20Resources) below) requires ImageMagick `convert` installed.
 
-## Getting started
+## Getting started :car:
 
 ### A test run
 
@@ -34,7 +36,7 @@ This should open a Simulator, build and launch the demo app.
 
 If it launches, continue to the next step.
 
-*Don't worry if the app runs a bit slowly in the Simulator.*
+> *Don't worry if the app runs slowly in the Simulator.*
 
 ### Basics
 
@@ -42,19 +44,18 @@ If it launches, continue to the next step.
 At least you should update `CFBundleIdentifier`, `CFBundleName` and `CFBundleDisplayName`.
 
 > Pick a unique Bundle ID (`CFBundleIdentifier`) in reverse domain style,
-like `com.example.myapp`, but obviously not that.
+like `com.example.myapp`, but obviously not exactly that.
 
-**Now** you are all set to make a test build for the Simulator.
+**Now** you are all set to make another test build for the Simulator.
 
 If you have any iDevice connected, disconnect it and run `./launch.sh`.
 
-This should open a Simulator unless already running, build and launch the app.
+This should open a Simulator unless already running, build and launch the app with the configured display name.
 
-TIGR uses OpenGL with some basic shaders, which will probably be software rendered on your simulator, making the app run slowly.
+> NOTE: TIGR uses OpenGL with some basic shaders, which will probably be software rendered on your simulator, making the app run slowly.
+    *You will need to run on device to do any serious development work.*
 
-*You will need to run on device to do any serious development work.*
-
-### Running on device
+### Run on device :iphone:
 
 To be able to run on device, you need:
 
@@ -65,13 +66,14 @@ To be able to run on device, you need:
 You can set up all three on your [developer account](https://developer.apple.com/account) pages,
 OR, you can **do it all from the comfort of your terminal**:
 
+* Copy `settings.example` to `settings.env`
 * Update the `APPSTORE_CONNECT_ISSUER_ID` and `APPSTORE_CONNECT_API_KEY_ID` settings in `settings.env`
     to provide access to the App Store API.
-* Use `./makecert.sh development` to generate a signing certificate and import it
+* Run `./makecert.sh development` to generate a signing certificate and import it
     into the keychain to make it available for code signing.
     * *If you already have a signing certificate, you don't need to create a new one!*
-* Use `./registerid.sh` to register the bundle ID using the values from `Info.plist`.
-* Use `./makeprofile.sh development` to create a development provisioning profile.
+* Run `./registerid.sh` to register the bundle ID using the values from `Info.plist`.
+* Run `./makeprofile.sh development` to create a development provisioning profile.
 
 Make sure to update the `SIGNING_IDENTITY` and `PROVISIONING_PROFILE_ID` settings in `settings.env`.
 
@@ -79,7 +81,9 @@ Connect and unlock an iDevice and run `./launch.sh` again.
 
 Now the app should run at full speed on your device.
 
-Now, replace the meat of `src/main.c` with your TIGR code, and you're done.
+### Start building :construction:
+
+Replace the meat of `src/main.c` with your TIGR code, and you're done.
 
 Just like with desktop TIGR, the code can be as tiny as this:
 
@@ -135,13 +139,22 @@ If you need to do more iOS specifics, you can inherit from `TigrAppDelegate`.
 Check out `main.m`.
 
 ### C/C++
-You can of course replace main.c with main.cpp if you want. Just update `CMakeLists.txt` and declare `tigrMain` as `extern "C"`:
+You can of course replace main.c with main.cpp if you want. Just update the `Makefile` and declare `tigrMain` as `extern "C"`:
 
 ```C++
 extern "C" void tigrMain() {
     // ...
 }
 ```
+
+## Debugging
+
+TIMOGRiOS comes with a **complete debug setup** for VS Code with two configurations: "Debug on device" and "Debug in simulator".
+Simply switch to the "run and debug" panel (⇧ ⌘ D), select the configuration and press "run" (▶ / F5).
+
+You can also run `launch.sh debug` to launch the app in the LLDB commandline debugger.
+
+> NOTE: On the simulator, the debugger breaks on launch and you need to "continue".
 
 ## Building for App Store / TestFlight
 
