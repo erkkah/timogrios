@@ -4,6 +4,7 @@ build
 *.app
 *.entitlements
 *.mobileprovision
+settings.env
 
 # Explicitly include .vscode
 !.vscode
