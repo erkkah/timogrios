@@ -1,4 +1,6 @@
-# TIMOGRiOS - TIny MObile GRaphics starter template for iOS :tiger:
+# TIMOGRiOS - TIny MObile GRaphics starter template for iOS
+
+![](resources/timogrios-small.png)
 
 **TIMOGRiOS** is a tiny iOS starter template for creating fullscreen 2D apps using the
 [TIGR](https://github.com/erkkah/tigr) library.
@@ -27,6 +29,9 @@ Oh, and you don't even have to open up Xcode to compile, debug and sign your app
  Making image sets (see [Adding Resources](#Adding%20Resources) below) requires ImageMagick `convert` installed.
 
 ## Getting started :car:
+
+* [Generate](https://github.com/erkkah/timogrios/generate) your own repo based on this template
+* Clone your new repo to get the files to your machine
 
 ### A test run
 
