@@ -8,3 +8,5 @@ settings.env
 
 # Explicitly include .vscode
 !.vscode
+# except for settings.json
+.vscode/settings.json
