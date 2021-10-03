@@ -26,7 +26,7 @@ Oh, and you don't even have to open up Xcode to compile, debug and sign your app
     * Follow the instructions to create and install an AppStore Connect API Key
 * The [ios deploy](https://github.com/ios-control/ios-deploy) tool installed
 
- Making image sets (see [Adding Resources](#Adding%20Resources) below) requires ImageMagick `convert` installed.
+ Making image sets (see [Adding resources](#Adding%20resources) below) requires ImageMagick `convert` installed.
 
 ## Getting started :car:
 
@@ -158,7 +158,7 @@ extern "C" void tigrMain() {
 TIMOGRiOS comes with a **complete debug setup** for VS Code with two configurations: "Debug on device" and "Debug in simulator".
 Simply switch to the "run and debug" panel (⇧ ⌘ D), select the configuration and press "run" (▶ / F5).
 
-You can also run `launch.sh debug` to launch the app in the LLDB commandline debugger.
+You can also run `./launch.sh debug` to launch the app in the LLDB commandline debugger.
 
 > NOTE: On the simulator, the debugger breaks on launch and you need to "continue".
 
