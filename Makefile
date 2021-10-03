@@ -1,4 +1,4 @@
-default: check $(TARGET)
+default: build
 
 SOURCES=src/main.m src/main.c
 
@@ -7,6 +7,16 @@ CFLAGS+=-g -O0
 else
 CFLAGS+=-Oz
 endif
+
+ifndef SDKROOT
+SDKROOT=$(shell xcrun --sdk iphoneos --show-sdk-path)
+endif
+
+ifndef TARGET
+TARGET=build/app.device
+endif
+
+build: check $(TARGET)
 
 $(TARGET): $(SOURCES) tigr/tigr.c tigr/tigr.h Makefile
 	clang $(CFLAGS) \
@@ -19,10 +29,12 @@ $(TARGET): $(SOURCES) tigr/tigr.c tigr/tigr.h Makefile
 	-I tigr \
 	-o $@ $(SOURCES) tigr/tigr.c
 
-.PHONY: clean check
+.PHONY: clean check build
 
 clean:
 	rm -rf build/*
 
 check:
-	@[ ! -z $(SDKROOT) ]
+	mkdir -p build
+	@[ ! -z $(SDKROOT) ] || echo Missing SDKROOT env variable
+	@[ ! -z $(TARGET) ] || echo Missing TARGET env variable
