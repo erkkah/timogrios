@@ -192,8 +192,13 @@ simulatorRunning() {
     xcrun simctl getenv booted HOME &> /dev/null
 }
 
+startSimulator() {
+    echo "Starting simulator"
+    open -a Simulator && sleep 3
+}
+
 verifySimulatorRunning() {
-    simulatorRunning || (open -a Simulator && sleep 3)
+    simulatorRunning || startSimulator
     simulatorRunning || noTarget
 }
 
