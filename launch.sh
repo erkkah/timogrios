@@ -106,7 +106,7 @@ getPath() {
 saveLLDBInitCommands() {
     local deviceApp=$1
     cat <<EOF > .init.lldb
-script device_app="${deviceApp}"
+script app_path="${deviceApp}"
 script connect_url="connect://127.0.0.1:${DEBUG_PORT}"
 EOF
 }
@@ -130,23 +130,25 @@ launchOnDevice() {
         if [[ -z "$DEBUG_PORT" ]]; then
             ios-deploy -d -b "$BUNDLE"
         else
+            cleanup
             ios-deploy -N -p $DEBUG_PORT -b "$BUNDLE" --json > .debugserver.json &
-            echo $! > .debugserver.pid
             echo -n "Waiting for debug server.."
             waitForPath .debugserver.json
             echo "running"
             local deviceApp=$(getPath .debugserver.json)
             echo "Device app path: $deviceApp"
             saveLLDBInitCommands $deviceApp
+            echo "Ready for debugger connection"
+            exit 0
         fi
     fi
 }
 
 cleanup() {
     set +e
-    [[ -f .debugserver.pid ]] && kill $(cat .debugserver.pid)
-    rm -f .debugserver.pid .debugserver.json .init.lldb
-    exit 0
+    killall ios-deploy &> /dev/null
+    rm -f .debugserver.json .init.lldb
+    set -e
 }
 
 launchOnSimulator() {
@@ -206,6 +208,7 @@ for arg in $*; do
             ;;
         cleanup)
             cleanup
+            exit 0
             ;;
         device)
             FORCE_DEVICE=1
