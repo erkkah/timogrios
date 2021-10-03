@@ -106,8 +106,8 @@ getPath() {
 saveLLDBInitCommands() {
     local deviceApp=$1
     cat <<EOF > .init.lldb
-script fruitstrap_device_app="${deviceApp}"
-script fruitstrap_connect_url="connect://127.0.0.1:${DEBUG_PORT}"
+script device_app="${deviceApp}"
+script connect_url="connect://127.0.0.1:${DEBUG_PORT}"
 EOF
 }
 
