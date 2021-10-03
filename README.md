@@ -26,7 +26,7 @@ Oh, and you don't even have to open up Xcode to compile, debug and sign your app
     * Follow the instructions to create and install an AppStore Connect API Key
 * The [ios deploy](https://github.com/ios-control/ios-deploy) tool installed
 
- Making image sets (see [Adding resources](#Adding%20resources) below) requires ImageMagick `convert` installed.
+ Making image sets (see [Adding resources](#adding-resources) below) requires ImageMagick `convert` installed.
 
 ## Getting started :car:
 
