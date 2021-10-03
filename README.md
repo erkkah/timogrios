@@ -140,8 +140,9 @@ Writing files (`tigrSaveImage`) will write to the given system path. TIGR will n
 
 ### Threads and extending the iOS side
 The `tigrMain` entry point runs on a rendering thread separate from the main iOS thread.
-If you need to do more iOS specifics, you can inherit from `TigrAppDelegate`.
-Check out `main.m`.
+
+If you need to do more iOS specifics, you can "inherit" from `TigrAppDelegate` by using
+an object proxy. Check out `custom_main.m` for an example.
 
 ### C/C++
 You can of course replace main.c with main.cpp if you want. Just update the `Makefile` and declare `tigrMain` as `extern "C"`:
