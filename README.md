@@ -114,12 +114,12 @@ All files in the `resources` directory are included as is in the app bundle.
 The `Icon` - files are icons in different sizes, and the `Launch` - files
 are launch images.
 
-Use the `makeImageSet.sh` script to create new icons or launch images.
+Use the `makeimageset.sh` script to create new icons or launch images.
 
 For example:
 ```shell
 $ cd resources
-$ ../makeImageSet.sh screen Launch pink
+$ ../makeimageset.sh screen Launch pink
 ```
 
 The "color" argument can be specified in [any format accepted by ImageMagick](https://imagemagick.org/script/color.php).
